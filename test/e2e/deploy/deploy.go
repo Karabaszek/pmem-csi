@@ -35,7 +35,7 @@ import (
 
 	api "github.com/intel/pmem-csi/pkg/apis/pmemcsi/v1beta1"
 	pmemexec "github.com/intel/pmem-csi/pkg/exec"
-	"github.com/intel/pmem-csi/test/test-config"
+	testconfig "github.com/intel/pmem-csi/test/test-config"
 
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
@@ -1017,6 +1017,16 @@ func EnsureDeploymentNow(f *framework.Framework, deployment *Deployment) {
 				if os.Getenv("TEST_KUBERNETES_VERSION") == "1.20" {
 					err = os.Symlink("kubernetes-1.19", workRoot+"/deploy/kubernetes-1.20")
 					framework.ExpectNoError(err, "symlink for Kubernetes 1.20")
+				}
+
+				// V0.8 setup-deployment.sh does not generate needed certificates.
+				// Instead it assumes that those certificates were pre-generated.
+				// So, we explicitly generate them by using the appropriate make target.
+				if deployment.Version == "0.8" {
+					cmd := exec.Command("make", "_work/pmem-ca/.ca-stamp")
+					cmd.Dir = root
+					_, err := pmemexec.Run(cmd)
+					framework.ExpectNoError(err, "provision certificates for '%s'", deployment.Name())
 				}
 			}
 			cmd := exec.Command("test/setup-deployment.sh")
