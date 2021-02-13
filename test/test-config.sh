@@ -167,8 +167,8 @@ fi
 # < 1.19) and because there were random connection failures to node ports during sanity
 # testing (Kubernetes 1.19.0)
 : ${TEST_FEATURE_GATES:=\
-$(case ${TEST_KUBERNETES_VERSION} in 1.1[6-9]) echo 'EndpointSlice=false,';; esac)\
-$(case ${TEST_KUBERNETES_VERSION} in 1.1[8-9]) echo 'EndpointSliceProxying=false,';; esac)\
+$(case ${TEST_KUBERNETES_VERSION} in 1.1[6-9] | 1.20) echo 'EndpointSlice=false,';; esac)\
+$(case ${TEST_KUBERNETES_VERSION} in 1.1[8-9] | 1.20) echo 'EndpointSliceProxying=false,';; esac)\
 $(case ${TEST_KUBERNETES_VERSION} in 1.19 | 1.20) echo 'CSIStorageCapacity=true,GenericEphemeralVolume=true,';; esac)\
 }
 
